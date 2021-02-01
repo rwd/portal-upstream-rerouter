@@ -1,0 +1,6 @@
+---
+applications:
+- docker:
+    image: europeana/portal-upstream-rerouter:((docker-tag))
+  memory: ((memory))
+  env: ((env))

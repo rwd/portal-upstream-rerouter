@@ -1,0 +1,35 @@
+server {
+  listen ${PORT};
+  server_name localhost;
+
+  # IPv6 switched off to prevent errors re "Address family not supported by protocol"
+  # on Cloud Foundry.
+  resolver ${RESOLVER} ipv6=off;
+
+  # Set port_in_redirect from env var PORT_IN_REDIRECT
+  port_in_redirect "${PORT_IN_REDIRECT}";
+
+  # Serve static files
+  location / {
+    root /usr/share/nginx/html;
+    try_files $uri $uri @portal;
+  }
+
+  # Reverse proxy everything else to the Portal, with custom headers for non-default
+  # APIs.
+  location @portal {
+    # Forces use of resolver. Essential for regularly changing DNS records, such
+    # as those for container-to-container networking.
+    # See: https://www.nginx.com/blog/dns-service-discovery-nginx-plus/
+    set $url ${PORTAL_URL};
+
+    proxy_pass $url;
+
+    proxy_set_header Host ${PORTAL_HOST};
+    proxy_set_header X-Europeana-Annotation-API-URL "${ANNOTATION_API_URL}";
+    proxy_set_header X-Europeana-Entity-API-URL "${ENTITY_API_URL}";
+    proxy_set_header X-Europeana-Recommendation-API-URL "${RECOMMENDATION_API_URL}";
+    proxy_set_header X-Europeana-Record-API-URL "${RECORD_API_URL}";
+    proxy_set_header X-Europeana-Set-API-URL "${SET_API_URL}";
+  }
+}
