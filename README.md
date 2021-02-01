@@ -19,8 +19,6 @@ Example:
 
 ```.env
 # .env
-PORTAL_URL=https://portal.example.org
-PORTAL_HOST=portal.example.org
 RECORD_API_URL=https://api.example.org/record
 ```
 
